@@ -1,23 +1,23 @@
 package io.github.lucaargolo.terrarianslimes.common.block
 
-import io.github.lucaargolo.terrarianslimes.TerrarianSlimes.Companion.creativeGroupSettings
+import io.github.lucaargolo.terrarianslimes.TerrarianSlimes.Companion.creativeGroup
 import io.github.lucaargolo.terrarianslimes.utils.RegistryCompendium
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
-import net.minecraft.block.Material
 import net.minecraft.block.SlimeBlock
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
+import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 import java.awt.Color
 
-object BlockCompendium: RegistryCompendium<Block>(Registry.BLOCK) {
+object BlockCompendium: RegistryCompendium<Block>(Registries.BLOCK) {
 
     val BLUE_SLIME_BLOCK = register("blue_slime_block", SlimeBlock(FabricBlockSettings.copyOf(Blocks.SLIME_BLOCK)))
     val RED_SLIME_BLOCK = register("red_slime_block", SlimeBlock(FabricBlockSettings.copyOf(Blocks.SLIME_BLOCK)))
@@ -32,12 +32,15 @@ object BlockCompendium: RegistryCompendium<Block>(Registry.BLOCK) {
     val CRIMSON_SLIME_BLOCK = register("crimson_slime_block", SlimeBlock(FabricBlockSettings.copyOf(Blocks.SLIME_BLOCK)))
     val ILLUMINANT_SLIME_BLOCK = register("illuminant_slime_block", SlimeBlock(FabricBlockSettings.copyOf(Blocks.SLIME_BLOCK)))
     val RAINBOW_SLIME_BLOCK = register("rainbow_slime_block", RainbowSlimeBlock(FabricBlockSettings.copyOf(Blocks.SLIME_BLOCK)))
-    val GLOWSTICK_LIGHT = register("glowstick_light", GlowstickLightBlock(FabricBlockSettings.of(Material.AIR).luminance(15).ticksRandomly().noCollision().dropsNothing()))
+    val GLOWSTICK_LIGHT = register("glowstick_light", GlowstickLightBlock(FabricBlockSettings.of().luminance(15).ticksRandomly().noCollision().dropsNothing()))
 
     fun registerBlockItems(itemMap: MutableMap<Identifier, Item>) {
         map.forEach { (identifier, block) ->
-            if(block != GLOWSTICK_LIGHT)
-                itemMap[identifier] = BlockItem(block, creativeGroupSettings())
+            if(block != GLOWSTICK_LIGHT) {
+                val item = BlockItem(block, FabricItemSettings())
+                itemMap[identifier] = item
+                creativeGroup(item)
+            }
         }
     }
 

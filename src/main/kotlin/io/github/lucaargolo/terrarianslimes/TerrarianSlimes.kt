@@ -11,13 +11,18 @@ import io.github.lucaargolo.terrarianslimes.utils.ModConfig
 import io.github.lucaargolo.terrarianslimes.utils.ModIdentifier
 import io.github.lucaargolo.terrarianslimes.utils.RoyalGelHolders
 import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.item.ItemConvertible
 import net.minecraft.item.ItemStack
-import net.minecraft.tag.TagKey
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.registry.tag.TagKey
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
@@ -34,12 +39,15 @@ class TerrarianSlimes: ModInitializer {
         BlockEntityCompendium.initialize()
         EntityCompendium.initialize()
         RoyalGelHolders.initialize()
+
+        Registry.register(Registries.ITEM_GROUP, creativeTabKey, creativeTab)
     }
 
     companion object {
         const val MOD_ID = "terrarianslimes"
 
-        private val creativeTab = FabricItemGroupBuilder.create(ModIdentifier("creative_tab")).icon{ ItemStack(ItemCompendium.RAINBOW_SLIME_BALL) }.build()
+        private val creativeTabKey = RegistryKey.of(RegistryKeys.ITEM_GROUP, ModIdentifier("creative_tab"))
+        private val creativeTab = FabricItemGroup.builder().displayName(Text.translatable("itemGroup.terrarianslimes.creative_tab")).icon{ ItemStack(ItemCompendium.RAINBOW_SLIME_BALL) }.build()
         private val parser = JsonParser()
         private val gson = GsonBuilder().setPrettyPrinting().create()
         private val logger: Logger = LogManager.getLogger("Terrarian Slimes")
@@ -76,9 +84,13 @@ class TerrarianSlimes: ModInitializer {
             FabricLoader.getInstance().isModLoaded("canvas")
         }
 
-        val slimeBlocksTag = TagKey.of(Registry.BLOCK_KEY, Identifier("c", "slime_blocks"));
+        val slimeBlocksTag = TagKey.of(RegistryKeys.BLOCK, Identifier("c", "slime_blocks"));
 
-        fun creativeGroupSettings(): FabricItemSettings = FabricItemSettings().group(creativeTab)
+        fun creativeGroup(item: ItemConvertible) {
+            ItemGroupEvents.modifyEntriesEvent(creativeTabKey).register {
+                it.add(item)
+            }
+        }
     }
 
 }

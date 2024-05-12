@@ -7,7 +7,6 @@ import net.minecraft.block.Blocks
 import net.minecraft.entity.EntityType
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.world.World
-import net.minecraft.world.explosion.Explosion
 
 class ThrowableDirtBombEntity: ThrowableEntity {
 
@@ -26,7 +25,7 @@ class ThrowableDirtBombEntity: ThrowableEntity {
         if(age >= 60) {
             (world as? ServerWorld)?.let { serverWorld ->
                 ExplosionBlockStateReplacement.Server.setupReplacementBlockState(serverWorld, x, y, z, Blocks.DIRT.defaultState)
-                serverWorld.createExplosion(this, null, null, x, y, z, 2f, false, Explosion.DestructionType.DESTROY)
+                serverWorld.createExplosion(this, null, null, x, y, z, 2f, false, World.ExplosionSourceType.TNT)
             }
             remove(RemovalReason.DISCARDED)
         }

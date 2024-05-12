@@ -11,12 +11,12 @@ import net.minecraft.client.render.entity.model.EntityModelLayers
 import net.minecraft.client.render.entity.model.SlimeEntityModel
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.client.render.model.BakedModel
-import net.minecraft.client.render.model.json.ModelTransformation
+import net.minecraft.client.render.model.json.ModelTransformationMode
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.mob.SlimeEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.PlayerScreenHandler
-import net.minecraft.util.math.Vec3f
+import net.minecraft.util.math.RotationAxis
 
 class SlimeCrownBuiltinItemRenderer: BuiltinItemRendererRegistry.DynamicItemRenderer {
 
@@ -36,21 +36,21 @@ class SlimeCrownBuiltinItemRenderer: BuiltinItemRendererRegistry.DynamicItemRend
         itemRenderer.getModel(ItemStack(ItemCompendium.GOLD_CROWN), null, null, 0)
     }
 
-    override fun render(stack: ItemStack, mode: ModelTransformation.Mode, matrices: MatrixStack, vertexConsumers: VertexConsumerProvider, light: Int, overlay: Int) {
+    override fun render(stack: ItemStack, mode: ModelTransformationMode, matrices: MatrixStack, vertexConsumers: VertexConsumerProvider, light: Int, overlay: Int) {
         val slimeLayer = when(mode) {
-            ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND -> RenderLayer.getEntityCutout(texture)
-            ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND -> RenderLayer.getEntityCutout(texture)
+            ModelTransformationMode.FIRST_PERSON_LEFT_HAND -> RenderLayer.getEntityCutout(texture)
+            ModelTransformationMode.FIRST_PERSON_RIGHT_HAND -> RenderLayer.getEntityCutout(texture)
             else -> RenderLayer.getEntityTranslucent(texture)
         }
         matrices.push()
         matrices.translate(0.5, 1.25, 0.5)
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180f))
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180f))
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180f))
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180f))
         slimeModel.render(matrices, vertexConsumers.getBuffer(slimeLayer), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f)
         val overlayLayer = when(mode) {
-            ModelTransformation.Mode.GUI -> RenderLayer.getEntityTranslucentCull(texture)
-            ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND -> RenderLayer.getEntityTranslucent(texture)
-            ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND -> RenderLayer.getEntityTranslucent(texture)
+            ModelTransformationMode.GUI -> RenderLayer.getEntityTranslucentCull(texture)
+            ModelTransformationMode.FIRST_PERSON_LEFT_HAND -> RenderLayer.getEntityTranslucent(texture)
+            ModelTransformationMode.FIRST_PERSON_RIGHT_HAND -> RenderLayer.getEntityTranslucent(texture)
             else -> RenderLayer.getItemEntityTranslucentCull(texture)
         }
         overlayModel.render(matrices, vertexConsumers.getBuffer(overlayLayer), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f)

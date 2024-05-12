@@ -48,7 +48,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         float tickDelta = terrarianslimes_TempTickDelta;
         RenderLayer renderLayer = this.getRenderLayer(livingEntity, showBody, translucent, showOutline);
         if(livingEntity.getType() == EntityCompendium.INSTANCE.getRAINBOW_SLIME()) {
-            Color color = Color.getHSBColor((livingEntity.world.getTime() + tickDelta) / 200.0f, 1.0f, 1.0f);
+            Color color = Color.getHSBColor((livingEntity.getWorld().getTime() + tickDelta) / 200.0f, 1.0f, 1.0f);
             if(renderLayer != null) {
                 VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
                 int overlay = LivingEntityRenderer.getOverlay(livingEntity, this.getAnimationCounter(livingEntity, tickDelta));

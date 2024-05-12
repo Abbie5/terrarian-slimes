@@ -4,7 +4,6 @@ import io.github.lucaargolo.terrarianslimes.common.entity.EntityCompendium
 import io.github.lucaargolo.terrarianslimes.common.item.ItemCompendium
 import net.minecraft.entity.EntityType
 import net.minecraft.world.World
-import net.minecraft.world.explosion.Explosion
 
 class ThrowableBombEntity: ThrowableEntity {
 
@@ -22,7 +21,7 @@ class ThrowableBombEntity: ThrowableEntity {
         super.tick()
         if(age >= 60) {
             if(!world.isClient) {
-                world.createExplosion(this, x, y, z, 2f, Explosion.DestructionType.BREAK)
+                world.createExplosion(this, x, y, z, 2f, World.ExplosionSourceType.TNT)
             }
             remove(RemovalReason.DISCARDED)
         }

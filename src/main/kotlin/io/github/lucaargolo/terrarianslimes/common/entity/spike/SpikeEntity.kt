@@ -12,14 +12,15 @@ import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.projectile.PersistentProjectileEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.Packet
+import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
+import net.minecraft.registry.Registries
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 class SpikeEntity: PersistentProjectileEntity {
@@ -59,15 +60,15 @@ class SpikeEntity: PersistentProjectileEntity {
 
     override fun writeCustomDataToNbt(tag: NbtCompound) {
         super.writeCustomDataToNbt(tag)
-        statusEffect?.let { tag.putString("statusEffect", Registry.STATUS_EFFECT.getId(it).toString()) }
+        statusEffect?.let { tag.putString("statusEffect", Registries.STATUS_EFFECT.getId(it).toString()) }
     }
 
     override fun readCustomDataFromNbt(tag: NbtCompound) {
         super.readCustomDataFromNbt(tag)
-        statusEffect = Registry.STATUS_EFFECT.get(Identifier(tag.getString("statusEffect")))
+        statusEffect = Registries.STATUS_EFFECT.get(Identifier(tag.getString("statusEffect")))
     }
 
-    override fun createSpawnPacket(): Packet<*> {
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener> {
         val buf = PacketByteBufs.create()
         buf.writeVarInt(id)
         buf.writeUuid(getUuid())

@@ -4,8 +4,8 @@ import io.github.lucaargolo.terrarianslimes.common.block.BlockCompendium
 import io.github.lucaargolo.terrarianslimes.common.block.GlowstickLightBlock
 import io.github.lucaargolo.terrarianslimes.common.entity.EntityCompendium
 import io.github.lucaargolo.terrarianslimes.common.item.ItemCompendium
-import net.minecraft.block.Material
 import net.minecraft.entity.EntityType
+import net.minecraft.fluid.Fluids
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.state.property.Properties
 import net.minecraft.util.hit.BlockHitResult
@@ -31,9 +31,9 @@ class ThrowableGlowstickEntity: ThrowableEntity {
             if (delay-- <= 0 && world?.isClient == false) {
                 delay = 20
                 val state = world.getBlockState(blockPos)
-                if (state.material.isReplaceable && !state.material.isLiquid) {
+                if (state.isReplaceable && !state.isLiquid) {
                     world.setBlockState(blockPos, BlockCompendium.GLOWSTICK_LIGHT.defaultState.with(GlowstickLightBlock.GLOWSTICK, throwableType))
-                }else if(state.material == Material.WATER) {
+                }else if(state.fluidState.isEqualAndStill(Fluids.WATER)) {
                     world.setBlockState(blockPos, BlockCompendium.GLOWSTICK_LIGHT.defaultState.with(GlowstickLightBlock.GLOWSTICK, throwableType).with(Properties.WATERLOGGED, true))
                 }
             }

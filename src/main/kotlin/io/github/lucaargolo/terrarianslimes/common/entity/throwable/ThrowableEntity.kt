@@ -7,12 +7,13 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.Item
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.Packet
+import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
+import net.minecraft.registry.Registries
 import net.minecraft.util.StringIdentifiable
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import kotlin.math.abs
 
@@ -85,11 +86,11 @@ abstract class ThrowableEntity: ThrownItemEntity {
         throwableType = try{Type.valueOf(tag.getString("throwableType"))}catch(ignored: Exception){Type.NORMAL}
     }
 
-    override fun createSpawnPacket(): Packet<*> {
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener> {
         val buf = PacketByteBufs.create()
         buf.writeVarInt(id)
         buf.writeUuid(getUuid())
-        buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(type))
+        buf.writeVarInt(Registries.ENTITY_TYPE.getRawId(type))
         buf.writeDouble(x)
         buf.writeDouble(y)
         buf.writeDouble(z)

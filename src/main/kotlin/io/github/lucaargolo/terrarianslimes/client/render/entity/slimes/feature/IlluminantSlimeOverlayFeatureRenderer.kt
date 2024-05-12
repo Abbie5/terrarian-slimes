@@ -15,7 +15,7 @@ import net.minecraft.client.render.entity.model.EntityModelLoader
 import net.minecraft.client.render.entity.model.SlimeEntityModel
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3f
+import net.minecraft.util.math.RotationAxis
 
 class IlluminantSlimeOverlayFeatureRenderer<T: ModdedSlimeEntity<*>, M: EntityModel<T>>(context: FeatureRendererContext<T, M>, loader: EntityModelLoader): FeatureRenderer<T, M>(context) {
 
@@ -33,14 +33,14 @@ class IlluminantSlimeOverlayFeatureRenderer<T: ModdedSlimeEntity<*>, M: EntityMo
                         descale(slimeEntity, matrices, tickDelta)
                         matrices.scale(-1.0F, -1.0F, 1.0F)
                         val bodyYaw = MathHelper.lerpAngleDegrees(tickDelta, slimeEntity.prevBodyYaw, slimeEntity.bodyYaw)
-                        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-1.0f * (180.0f - bodyYaw)))
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-1.0f * (180.0f - bodyYaw)))
                         val cameraPos = MinecraftClient.getInstance().gameRenderer.camera.pos
                         val d = MathHelper.lerp(tickDelta.toDouble(), slimeEntity.lastRenderX, slimeEntity.x) - cameraPos.x
                         val e = MathHelper.lerp(tickDelta.toDouble(), slimeEntity.lastRenderY, slimeEntity.y) - cameraPos.y
                         val f = MathHelper.lerp(tickDelta.toDouble(), slimeEntity.lastRenderZ, slimeEntity.z) - cameraPos.z
                         matrices.translate(-d, -e, -f)
                         matrices.translate(prevPos.left.x - cameraPos.x, prevPos.left.y - cameraPos.y, prevPos.left.z - cameraPos.z)
-                        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw))
+                        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - bodyYaw))
                         matrices.scale(-1.0F, -1.0F, 1.0F)
                         scale(slimeEntity, matrices, tickDelta)
                         matrices.translate(0.0, -1.5010000467300415, 0.0)

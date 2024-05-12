@@ -7,7 +7,7 @@ import io.github.lucaargolo.terrarianslimes.utils.ExplosionBlockStateReplacement
 import io.github.lucaargolo.terrarianslimes.utils.ModIdentifier
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.block.Block
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registries
 
 object PacketCompendium {
 
@@ -20,7 +20,7 @@ object PacketCompendium {
         ClientPlayNetworking.registerGlobalReceiver(SPAWN_THROWABLE_ENTITY) { client, handler, buf, _ ->
             val id = buf.readVarInt()
             val uuid = buf.readUuid()
-            val type = Registry.ENTITY_TYPE.get(buf.readVarInt())
+            val type = Registries.ENTITY_TYPE.get(buf.readVarInt())
             val x = buf.readDouble()
             val y = buf.readDouble()
             val z = buf.readDouble()

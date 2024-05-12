@@ -14,13 +14,13 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer
 import net.minecraft.client.render.entity.feature.FeatureRendererContext
 import net.minecraft.client.render.entity.model.EntityModel
 import net.minecraft.client.render.entity.model.EntityModelLoader
-import net.minecraft.client.render.model.json.ModelTransformation
+import net.minecraft.client.render.model.json.ModelTransformationMode
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.registry.Registries
 import net.minecraft.screen.PlayerScreenHandler
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3f
-import net.minecraft.util.registry.Registry
+import net.minecraft.util.math.RotationAxis
 
 open class ModdedSlimeEntityRenderer<T: ModdedSlimeEntity<*>, M: EntityModel<T>>(context: EntityRendererFactory.Context, model: M, overlayFeature: (FeatureRendererContext<T, M>, EntityModelLoader) -> FeatureRenderer<T, M>, private val isEmissive: Boolean = false): MobEntityRenderer<T, M>(context, model, 0.25f) {
 
@@ -30,7 +30,7 @@ open class ModdedSlimeEntityRenderer<T: ModdedSlimeEntity<*>, M: EntityModel<T>>
     }
 
     override fun getTexture(slimeEntity: T): Identifier {
-        return ModIdentifier("textures/entity/${Registry.ENTITY_TYPE.getId(slimeEntity.type).path}.png")
+        return ModIdentifier("textures/entity/${Registries.ENTITY_TYPE.getId(slimeEntity.type).path}.png")
     }
 
     override fun getRenderLayer(slimeEntity: T, showBody: Boolean, translucent: Boolean, showOutline: Boolean): RenderLayer? {
@@ -43,9 +43,9 @@ open class ModdedSlimeEntityRenderer<T: ModdedSlimeEntity<*>, M: EntityModel<T>>
             val offset = slimeEntity.boundingBox.center.subtract(slimeEntity.pos)
             matrixStack.translate(offset.x, offset.y - 0.25, offset.z)
             val angle = (slimeEntity.world.time + tickDelta) / 20f
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(angle))
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(angle))
             ItemLayerReplacement.setupReplacementLayer(RenderLayer.getItemEntityTranslucentCull(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE))
-            MinecraftClient.getInstance().itemRenderer.renderItem(slimeEntity.getBonusDrops(), ModelTransformation.Mode.GROUND, light, LivingEntityRenderer.getOverlay(slimeEntity, 0f), matrixStack, vertexConsumers, 0)
+            MinecraftClient.getInstance().itemRenderer.renderItem(slimeEntity.getBonusDrops(), ModelTransformationMode.GROUND, light, LivingEntityRenderer.getOverlay(slimeEntity, 0f), matrixStack, vertexConsumers, slimeEntity.world, 0)
             matrixStack.pop()
         }
         super.render(slimeEntity, yaw, tickDelta, matrixStack, vertexConsumers, if(isEmissive) 15728880 else light)

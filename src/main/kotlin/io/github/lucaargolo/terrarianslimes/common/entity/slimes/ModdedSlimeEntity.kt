@@ -9,7 +9,6 @@ import net.minecraft.block.Blocks
 import net.minecraft.entity.*
 import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
@@ -18,15 +17,15 @@ import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.mob.SlimeEntity
 import net.minecraft.item.ItemConvertible
 import net.minecraft.item.ItemStack
-import net.minecraft.loot.context.LootContext
+import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextType
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.particle.ItemStackParticleEffect
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.particle.ParticleTypes
+import net.minecraft.registry.tag.BlockTags
 import net.minecraft.sound.SoundEvents
 import net.minecraft.state.property.Properties
-import net.minecraft.tag.BlockTags
 import net.minecraft.util.Identifier
 import net.minecraft.util.ItemScatterer
 import net.minecraft.util.math.MathHelper
@@ -34,7 +33,6 @@ import net.minecraft.world.Difficulty
 import net.minecraft.world.LocalDifficulty
 import net.minecraft.world.ServerWorldAccess
 import net.minecraft.world.World
-import net.minecraft.world.event.GameEvent
 import net.minecraft.world.*
 
 open class ModdedSlimeEntity<C: ModConfig.ModdedSlimeConfig>(
@@ -76,7 +74,7 @@ open class ModdedSlimeEntity<C: ModConfig.ModdedSlimeConfig>(
 
     override fun damage(target: LivingEntity) {
         if (this.isAlive) {
-            if (currentCooldown <= 0 && this.canSee(target) && target.damage(DamageSource.mob(this), this.damageAmount)) {
+            if (currentCooldown <= 0 && this.canSee(target) && target.damage(this.damageSources.mobAttack(this), this.damageAmount)) {
                 playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f)
                 applyDamageEffects(this, target)
                 statusEffect?.let {
@@ -154,8 +152,8 @@ open class ModdedSlimeEntity<C: ModConfig.ModdedSlimeConfig>(
         this.setSize(this.defaultSize, true)
         if(this.hasBonusDrops) {
             val serverWorld = world.toServerWorld()
-            val table = serverWorld.server.lootManager.getTable(ModIdentifier("gameplay/extra_slime_drops"))
-            val ctx = LootContext.Builder(serverWorld).random(this.random).build(SLIMES_LOOT_CONTEXT)
+            val table = serverWorld.server.lootManager.getLootTable(ModIdentifier("gameplay/extra_slime_drops"))
+            val ctx = LootContextParameterSet.Builder(serverWorld).build(SLIMES_LOOT_CONTEXT)
             val stackList = table.generateLoot(ctx)
             this.dataTracker.set(BONUS_DROPS, stackList.firstOrNull() ?: ItemStack.EMPTY)
         }
